@@ -157,256 +157,251 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
     return SizedBox(
       height: double.infinity,
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
-          child: Form(
-            key: _form,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  onSaved: (newValue) => _amount = newValue!,
-                  initialValue: _amount,
-                  clipBehavior: Clip.hardEdge,
-                  autofocus: true,
-                  maxLength: 10,
-                  validator: _validateAmount,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'How much did you pay?',
-                    hintStyle: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary), // Placeholder text
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(20.0), // Rounded corners
-                      borderSide: BorderSide.none, // No border
-                    ),
+        padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
+        child: Form(
+          key: _form,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                onSaved: (newValue) => _amount = newValue!,
+                initialValue: _amount,
+                clipBehavior: Clip.hardEdge,
+                autofocus: true,
+                maxLength: 10,
+                validator: _validateAmount,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'How much did you pay?',
+                  hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary), // Placeholder text
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 16.0),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Rounded corners
+                    borderSide: BorderSide.none, // No border
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  onSaved: (newValue) => _title = newValue!,
-                  initialValue: _title,
-                  maxLength: 10,
-                  validator: _validateTitle,
-                  decoration: InputDecoration(
-                    hintStyle:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
-                    hintText:
-                        'Where did you pay? (Optional)', // Placeholder text
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(20.0), // Rounded corners
-                      borderSide: BorderSide.none, // No border
-                    ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                onSaved: (newValue) => _title = newValue!,
+                initialValue: _title,
+                maxLength: 10,
+                validator: _validateTitle,
+                decoration: InputDecoration(
+                  hintStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintText: 'Where did you pay? (Optional)', // Placeholder text
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 16.0),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Rounded corners
+                    borderSide: BorderSide.none, // No border
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  onSaved: (newValue) => _description = newValue!,
-                  initialValue: _description,
-                  validator: _validateDescription,
-                  maxLength: 20,
-                  decoration: InputDecoration(
-                    hintStyle:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
-                    hintText: 'Add a note. (Optional)', // Placeholder text
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(20.0), // Rounded corners
-                      borderSide: BorderSide.none, // No border
-                    ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                onSaved: (newValue) => _description = newValue!,
+                initialValue: _description,
+                validator: _validateDescription,
+                maxLength: 20,
+                decoration: InputDecoration(
+                  hintStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintText: 'Add a note. (Optional)', // Placeholder text
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 16.0),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Rounded corners
+                    borderSide: BorderSide.none, // No border
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _dateTime,
-                        onTap: _openDatePicker,
-                        clipBehavior: Clip.hardEdge,
-                        keyboardType: TextInputType.none,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.calendar_month_rounded),
-                          prefixIconColor:
-                              Theme.of(context).colorScheme.primary,
-                          // Placeholder text
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 14.0, horizontal: 16.0),
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(20.0), // Rounded corners
-                            borderSide: BorderSide.none, // No border
-                          ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _dateTime,
+                      onTap: _openDatePicker,
+                      clipBehavior: Clip.hardEdge,
+                      keyboardType: TextInputType.none,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_month_rounded),
+                        prefixIconColor: Theme.of(context).colorScheme.primary,
+                        // Placeholder text
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14.0, horizontal: 16.0),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(20.0), // Rounded corners
+                          borderSide: BorderSide.none, // No border
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    ...PaymentMode.values.asMap().entries.map(
-                      (entry) {
-                        final int index = entry.key;
-                        final PaymentMode mode = entry.value;
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ...PaymentMode.values.asMap().entries.map(
+                    (entry) {
+                      final int index = entry.key;
+                      final PaymentMode mode = entry.value;
 
-                        // Create a widget for each fruit
-                        return ElevatedButton(
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            setState(
-                              () {
-                                _selectedPaymentIndex = index;
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _selectedPaymentIndex == index
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: index == 0
-                                  ? const BorderRadius.only(
-                                      topLeft: Radius.circular(30.0),
-                                      bottomLeft: Radius.circular(30.0),
-                                    )
-                                  : const BorderRadius.only(
-                                      topRight: Radius.circular(30.0),
-                                      bottomRight: Radius.circular(30.0),
-                                    ),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0.0, vertical: 12.0),
-                            child: Text(
-                              capitalizeFirst(mode.name),
-                              style: TextStyle(
-                                  color: _selectedPaymentIndex == index
-                                      ? Colors.white
-                                      : Theme.of(context).colorScheme.primary,
-                                  fontSize: 16),
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Select category',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 15.0),
-                    Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: categories.map(
-                        (category) {
-                          return ElevatedButton(
-                            onPressed: _category.isNotEmpty
-                                ? () {
-                                    FocusScope.of(context).unfocus();
-                                    setState(() {
-                                      _category = category.id;
-                                    });
-                                  }
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _category == category.id
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
-                            child: Text(
-                              category.name,
-                              style: TextStyle(
-                                  color: _category == category.id
-                                      ? Colors.white
-                                      : Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16),
-                            ),
+                      // Create a widget for each fruit
+                      return ElevatedButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          setState(
+                            () {
+                              _selectedPaymentIndex = index;
+                            },
                           );
                         },
-                      ).toList(),
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            'Cancel',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.bold),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedPaymentIndex == index
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: index == 0
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(30.0),
+                                    bottomLeft: Radius.circular(30.0),
+                                  )
+                                : const BorderRadius.only(
+                                    topRight: Radius.circular(30.0),
+                                    bottomRight: Radius.circular(30.0),
+                                  ),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: _submitExpense,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 0.0, vertical: 12.0),
+                          child: Text(
+                            capitalizeFirst(mode.name),
+                            style: TextStyle(
+                                color: _selectedPaymentIndex == index
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.primary,
+                                fontSize: 16),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select category',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 15.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    children: categories.map(
+                      (category) {
+                        return ElevatedButton(
+                          onPressed: _category.isNotEmpty
+                              ? () {
+                                  FocusScope.of(context).unfocus();
+                                  setState(() {
+                                    _category = category.id;
+                                  });
+                                }
+                              : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
+                            backgroundColor: _category == category.id
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                           ),
                           child: Text(
-                            widget.newExpense == null ? 'Add' : 'Update',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                            category.name,
+                            style: TextStyle(
+                                color: _category == category.id
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16),
+                          ),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Cancel',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _submitExpense,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
+                        child: Text(
+                          widget.newExpense == null ? 'Add' : 'Update',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ),

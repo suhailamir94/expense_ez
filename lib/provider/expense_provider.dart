@@ -7,9 +7,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ExpenseNotifier extends StateNotifier<List<Expense>> {
   ExpenseNotifier() : super([]);
 
-  Future<void> loadData() async {
+  Future<void> loadAllTransactions() async {
     try {
-      state = await HiveDB.getAllExpenses();
+      state = await HiveDB.getAllTransactions();
+    } catch (error) {
+      log('Error fetching all expenses ${error.toString()}');
+    }
+  }
+
+  Future<void> loadTransactionsByDate(DateTime date) async {
+    try {
+      state = await HiveDB.getTransactionsByDate(date);
     } catch (error) {
       log('Error fetching all expenses ${error.toString()}');
     }

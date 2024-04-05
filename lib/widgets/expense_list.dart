@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExpenseList extends ConsumerWidget {
-  const ExpenseList({super.key, required this.expenses});
+  const ExpenseList({
+    super.key,
+    required this.expenses,
+  });
 
   final List<Expense> expenses;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,10 +29,11 @@ class ExpenseList extends ConsumerWidget {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: expenses.length,
-                itemBuilder: ((context, index) {
-                  return ExpenseItem(expense: expenses[index]);
-                })),
+              itemCount: expenses.length,
+              itemBuilder: ((context, index) {
+                return ExpenseItem(expense: expenses[index]);
+              }),
+            ),
           ),
         ],
       ),

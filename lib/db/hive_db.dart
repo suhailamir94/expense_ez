@@ -59,9 +59,23 @@ class HiveDB {
     }
   }
 
-  static Future<List<Expense>> getAllExpenses() async {
+  static Future<List<Expense>> getAllTransactions() async {
     final expenseBox = Hive.box<Expense>('expenses');
     return expenseBox.values.toList();
+  }
+
+  static Future<List<Expense>> getTransactionsByDate(DateTime date) async {
+    final Box<Expense> expenseBox = Hive.box<Expense>('expenses');
+
+    final DateTime today = DateTime(date.year, date.month, date.day);
+
+    List<Expense> todayTransactions = expenseBox.values.where((expense) {
+      final DateTime expenseDate = DateTime(expense.timestamp.year,
+          expense.timestamp.month, expense.timestamp.day);
+      return expenseDate.isAtSameMomentAs(today);
+    }).toList();
+
+    return todayTransactions;
   }
 
   static Future<void> addExpense(Expense expense) async {
