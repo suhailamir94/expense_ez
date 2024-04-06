@@ -24,14 +24,33 @@ class _HomeState extends ConsumerState<Home> {
   late Future<void> _categoryFuture;
 
   void loadHomeData() {
-    final Map<String, Object> filters = ref.watch(filterProvider);
-    if (filters['showAllExpenses'] as bool) {
-      _expensesFuture =
-          ref.read(expenseProvider.notifier).loadAllTransactions();
-    } else {
-      _expensesFuture = ref
-          .read(expenseProvider.notifier)
-          .loadTransactionsByDate(filters['selectedDate'] as DateTime);
+    final Map<String, dynamic> filters = ref.watch(filterProvider);
+    log(filters.toString());
+
+    switch (filters['selectedFilterIndex']) {
+      case 0:
+        _expensesFuture =
+            ref.read(expenseProvider.notifier).loadAllTransactions();
+        break;
+      case 1:
+        _expensesFuture =
+            ref.read(expenseProvider.notifier).loadCurrentMonthTransactions();
+        break;
+      case 2:
+        _expensesFuture = ref
+            .read(expenseProvider.notifier)
+            .loadTransactionsByDate(filters['selectedDate']);
+        break;
+      case 3:
+        _expensesFuture = ref
+            .read(expenseProvider.notifier)
+            .loadTransactionBetweenDates(
+                filters['fromDate'], filters['toDate']);
+        break;
+      default:
+        _expensesFuture = ref
+            .read(expenseProvider.notifier)
+            .loadTransactionsByDate(DateTime.now());
     }
     _categoryFuture = ref.read(categoryProvider.notifier).loadData();
   }
@@ -51,6 +70,7 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     final List<Expense> expenses = ref.watch(expenseProvider);
+    final Map<String, dynamic> filters = ref.watch(filterProvider);
 
     return FutureBuilder(
         future: Future.wait([

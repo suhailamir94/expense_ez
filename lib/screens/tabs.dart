@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/screens/home.dart';
 import 'package:expense_ez/screens/insights.dart';
+import 'package:expense_ez/widgets/filters.dart';
 import 'package:expense_ez/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +18,9 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedPageIndex = 0;
-  final bool _updateChildWidget = true;
+  bool _updateChildWidget = true;
+  final List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+  List<bool> selections = [false, false, false, false];
 
   void _selectPage(int index) {
     setState(() {
@@ -26,71 +28,19 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
     });
   }
 
+  void _onModalStateChange() {
+    setState(() {
+      _updateChildWidget = !_updateChildWidget;
+    });
+  }
+
+  bool isChecked = false;
   void _showModalBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        final Map<String, Object> filters = ref.watch(filterProvider);
-        return Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CheckboxListTile(
-                title: Text(
-                  'Show All Expenses',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary),
-                ),
-                value: filters['showAllExpenses'] as bool,
-                onChanged: (newValue) {
-                  ref.read(filterProvider.notifier).setFilter(
-                      newValue!, filters['selectedDate'] as DateTime);
-                  Navigator.pop(context); // Close the modal
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              TextButton(
-                onPressed: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: filters['selectedDate'] as DateTime,
-                    firstDate: DateTime(DateTime.now().year - 1),
-                    lastDate: DateTime.now(),
-                  );
-                  if (pickedDate != null) {
-                    ref.read(filterProvider.notifier).setFilter(
-                        filters['showAllExpenses'] as bool, pickedDate);
-                    // Perform action for selecting a date here
-                    Navigator.pop(context); // Close the modal
-                  }
-                },
-                child: ListTile(
-                  title: Row(
-                    children: [
-                      const Text('Only For Date:'),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          child: Text((filters['selectedDate'] as DateTime)
-                              .toString()
-                              .substring(0, 10)),
-                        ),
-                      ),
-                    ],
-                  ),
-                  selected: !(filters['showAllExpenses'] as bool),
-                ),
-              ),
-            ],
-          ),
+        return Filters(
+          updateHomePage: _onModalStateChange,
         );
       },
     );

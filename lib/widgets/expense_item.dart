@@ -6,7 +6,10 @@ import 'package:expense_ez/utils/util.dart';
 import 'package:expense_ez/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+
+DateFormat customFormatter = DateFormat('MMMM d, y');
 
 class ExpenseItem extends ConsumerWidget {
   const ExpenseItem({super.key, required this.expense});
@@ -99,12 +102,25 @@ class ExpenseItem extends ConsumerWidget {
               .textTheme
               .bodyLarge!
               .copyWith(color: Colors.grey),
-          trailing: Text(
-            '₹ ${expense.amount.toString()}',
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.bold),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '₹ ${expense.amount.toString()}',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                customFormatter.format(expense.timestamp),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(fontWeight: FontWeight.w500),
+              )
+            ],
           ),
           onTap: () {},
         ),

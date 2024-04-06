@@ -23,6 +23,23 @@ class ExpenseNotifier extends StateNotifier<List<Expense>> {
     }
   }
 
+  Future<void> loadCurrentMonthTransactions() async {
+    try {
+      state = await HiveDB.getAllTransactionsForCurrentMonth();
+    } catch (error) {
+      log('Error fetching expenses for current month ${error.toString()}');
+    }
+  }
+
+  Future<void> loadTransactionBetweenDates(
+      DateTime fromDate, DateTime toDate) async {
+    try {
+      state = await HiveDB.getTransactionsBetweenDates(fromDate, toDate);
+    } catch (error) {
+      log('Error fetching expenses for current month ${error.toString()}');
+    }
+  }
+
   Future<void> addExpense(Expense expense) async {
     try {
       await HiveDB.addExpense(expense);

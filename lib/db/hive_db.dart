@@ -59,6 +59,41 @@ class HiveDB {
     }
   }
 
+  static Future<List<Expense>> getAllTransactionsForCurrentMonth() async {
+    final box = await Hive.openBox<Expense>('expenses');
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    final today = DateTime(now.year, now.month, now.day);
+
+    final List<DateTime> datesOfMonth = List.generate(
+      today.day,
+      (index) => DateTime(now.year, now.month, index + 1),
+    );
+
+    final List<Expense> expenses = datesOfMonth
+        .map((date) => box.values.where((expense) =>
+            expense.timestamp.isAfter(firstDayOfMonth) &&
+            expense.timestamp.isBefore(today)))
+        .expand((element) => element)
+        .toList();
+
+    return expenses;
+  }
+
+  static Future<List<Expense>> getTransactionsBetweenDates(
+      DateTime startDate, DateTime endDate) async {
+    final box = await Hive.openBox<Expense>('expenses');
+
+    final List<Expense> expenses = box.values
+        .where((expense) =>
+            expense.timestamp
+                .isAfter(startDate.subtract(const Duration(days: 1))) &&
+            expense.timestamp.isBefore(endDate.add(const Duration(days: 1))))
+        .toList();
+
+    return expenses;
+  }
+
   static Future<List<Expense>> getAllTransactions() async {
     final expenseBox = Hive.box<Expense>('expenses');
     return expenseBox.values.toList();
