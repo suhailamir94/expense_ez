@@ -22,6 +22,14 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   late Future<void> _expensesFuture;
   late Future<void> _categoryFuture;
+  bool isAscendingSort = false;
+
+  void onSortChange() {
+    setState(() {
+      isAscendingSort = !isAscendingSort;
+    });
+    ref.read(expenseProvider.notifier).sortExpenses(isAscendingSort);
+  }
 
   void loadHomeData() {
     final Map<String, dynamic> filters = ref.watch(filterProvider);
@@ -70,7 +78,6 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     final List<Expense> expenses = ref.watch(expenseProvider);
-    final Map<String, dynamic> filters = ref.watch(filterProvider);
 
     return FutureBuilder(
         future: Future.wait([
@@ -96,7 +103,10 @@ class _HomeState extends ConsumerState<Home> {
               ],
             );
           }
-          return ExpenseList(expenses: expenses);
+          return ExpenseList(
+            expenses: expenses,
+            handleOnSort: onSortChange,
+          );
         });
   }
 }

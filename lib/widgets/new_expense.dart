@@ -4,6 +4,7 @@ import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/models/category.dart';
 import 'package:expense_ez/provider/expense_provider.dart';
 import 'package:expense_ez/provider/category_provider.dart.dart';
+import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,13 +104,12 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
 
   void _submitExpense() async {
     final valid = _form.currentState!.validate();
-    if (!valid || _category.isEmpty) return;
+    if (!valid || _category.isEmpty || categories.isEmpty) return;
     _form.currentState!.save();
 
     String snackbarMessage = widget.newExpense != null
         ? 'Transaction edited!'
         : 'Transaction added!';
-
     Category category = categories.firstWhere((e) => e.id == _category);
     PaymentMode paymentMode =
         _selectedPaymentIndex == 0 ? PaymentMode.cash : PaymentMode.online;
@@ -128,6 +128,15 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
         await ref.read(expenseProvider.notifier).updateExpense(expense);
       } else {
         await ref.read(expenseProvider.notifier).addExpense(expense);
+        ref.read(filterProvider.notifier).setFilter(
+            selectedFilterIndex: -1,
+            showAllExpenses: false,
+            selectedDate: DateTime.now(),
+            fromDate: DateTime(DateTime.now().year),
+            toDate: DateTime.now());
+        ref
+            .read(expenseProvider.notifier)
+            .loadTransactionsByDate(DateTime.now());
       }
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -153,7 +162,6 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
-    log(_category);
     return SizedBox(
       height: double.infinity,
       child: SingleChildScrollView(

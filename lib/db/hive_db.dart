@@ -62,21 +62,15 @@ class HiveDB {
   static Future<List<Expense>> getAllTransactionsForCurrentMonth() async {
     final box = await Hive.openBox<Expense>('expenses');
     final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final today = DateTime(now.year, now.month, now.day);
+    final firstDayOfMonth = DateTime(now.year, now.month, 0);
+    final today = DateTime(now.year, now.month, now.day + 1);
 
-    final List<DateTime> datesOfMonth = List.generate(
-      today.day,
-      (index) => DateTime(now.year, now.month, index + 1),
-    );
-
-    final List<Expense> expenses = datesOfMonth
-        .map((date) => box.values.where((expense) =>
+    final List<Expense> expenses = box.values
+        .where((expense) =>
             expense.timestamp.isAfter(firstDayOfMonth) &&
-            expense.timestamp.isBefore(today)))
-        .expand((element) => element)
+            expense.timestamp.isBefore(today))
         .toList();
-
+    expenses.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return expenses;
   }
 
@@ -91,12 +85,15 @@ class HiveDB {
             expense.timestamp.isBefore(endDate.add(const Duration(days: 1))))
         .toList();
 
+    expenses.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     return expenses;
   }
 
   static Future<List<Expense>> getAllTransactions() async {
     final expenseBox = Hive.box<Expense>('expenses');
-    return expenseBox.values.toList();
+    List<Expense> expenses = expenseBox.values.toList();
+    expenses.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return expenses;
   }
 
   static Future<List<Expense>> getTransactionsByDate(DateTime date) async {
@@ -110,6 +107,7 @@ class HiveDB {
       return expenseDate.isAtSameMomentAs(today);
     }).toList();
 
+    todayTransactions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return todayTransactions;
   }
 

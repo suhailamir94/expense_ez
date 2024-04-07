@@ -49,6 +49,15 @@ class ExpenseNotifier extends StateNotifier<List<Expense>> {
     }
   }
 
+  void sortExpenses(bool isAscending) {
+    if (isAscending) {
+      state.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    } else {
+      state.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    }
+    state = [...state];
+  }
+
   Future<void> deleteExpense(String id) async {
     try {
       await HiveDB.deleteExpense(id);

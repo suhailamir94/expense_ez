@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:expense_ez/provider/expense_provider.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +42,6 @@ class _FiltersState extends ConsumerState<Filters> {
               title: Text(_options[index]),
               value: filters['selectedFilterIndex'] == index,
               onChanged: (value) {
-                log('value: $value');
                 ref.read(filterProvider.notifier).setFilter(
                       selectedFilterIndex: value ? index : -1,
                       showAllExpenses: filters['showAllExpenses'],
@@ -52,7 +52,6 @@ class _FiltersState extends ConsumerState<Filters> {
                 if ([0, 1].contains(index) ||
                     ([2, 3].contains(index) && !value)) {
                   widget.updateHomePage();
-                  log('inside');
                   Navigator.pop(context);
                 }
               },
@@ -180,9 +179,30 @@ class _FiltersState extends ConsumerState<Filters> {
           const SizedBox(
             height: 20,
           ),
-          if ([2, 3].contains(filters['selectedFilterIndex']))
-            Center(
-                child: TextButton(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    ref.read(filterProvider.notifier).setFilter(
+                        selectedFilterIndex: -1,
+                        showAllExpenses: false,
+                        selectedDate: DateTime.now(),
+                        fromDate: DateTime(DateTime.now().year),
+                        toDate: DateTime.now());
+                    ref
+                        .read(expenseProvider.notifier)
+                        .loadTransactionsByDate(DateTime.now());
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Reset',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w700),
+                  )),
+              if ([2, 3].contains(filters['selectedFilterIndex']))
+                TextButton(
                     child: Text(
                       'Submit',
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -200,7 +220,9 @@ class _FiltersState extends ConsumerState<Filters> {
                           );
                       widget.updateHomePage();
                       Navigator.pop(context);
-                    }))
+                    })
+            ],
+          ),
         ],
       ),
     );
