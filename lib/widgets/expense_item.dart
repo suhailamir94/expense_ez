@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/provider/expense_provider.dart';
 import 'package:expense_ez/utils/util.dart';
@@ -24,8 +22,30 @@ class ExpenseItem extends ConsumerWidget {
         isScrollControlled: true);
   }
 
-  void _handleDeleteExpense(WidgetRef ref) {
-    ref.read(expenseProvider.notifier).deleteExpense(expense.id);
+  void _handleDeleteExpense(WidgetRef ref, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            actionsAlignment: MainAxisAlignment.end,
+            elevation: 2,
+            clipBehavior: Clip.hardEdge,
+            content: const Text('Delete Transaction?'),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    ref
+                        .read(expenseProvider.notifier)
+                        .deleteExpense(expense.id);
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text('Yes')),
+              ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('No'))
+            ],
+          );
+        });
   }
 
   void _handleEditExpense(BuildContext context) {
@@ -43,7 +63,7 @@ class ExpenseItem extends ConsumerWidget {
       },
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          _handleDeleteExpense(ref);
+          _handleDeleteExpense(ref, context);
         } else if (direction == DismissDirection.endToStart) {
           _handleEditExpense(context);
         }

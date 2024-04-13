@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/models/category.dart';
 import 'package:expense_ez/provider/expense_provider.dart';
@@ -63,8 +61,8 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
   }
 
   String? _validateTitle(String? value) {
-    if (value != null && value != '' && value.trim().length > 10) {
-      return 'Please enter atleast 4 characters';
+    if (value != null && value != '' && value.trim().length > 20) {
+      return 'Please enter only 10 characters';
     }
     return null;
   }
@@ -202,7 +200,7 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
               TextFormField(
                 onSaved: (newValue) => _title = newValue!,
                 initialValue: _title,
-                maxLength: 10,
+                maxLength: 20,
                 validator: _validateTitle,
                 decoration: InputDecoration(
                   hintStyle:

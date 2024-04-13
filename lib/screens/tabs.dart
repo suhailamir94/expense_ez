@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:expense_ez/screens/home.dart';
 import 'package:expense_ez/screens/insights.dart';
 import 'package:expense_ez/widgets/filters.dart';
@@ -19,8 +17,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedPageIndex = 0;
   bool _updateChildWidget = true;
-  final List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-  List<bool> selections = [false, false, false, false];
 
   void _selectPage(int index) {
     setState(() {

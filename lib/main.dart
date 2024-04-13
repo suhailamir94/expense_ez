@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'ExpenseEz',
         theme: ThemeData(
-            fontFamily: GoogleFonts.varelaRound().fontFamily,
+            fontFamily: GoogleFonts.roboto().fontFamily,
             colorScheme: ColorScheme.fromSeed(
                     seedColor: const Color.fromARGB(255, 72, 223, 157))
                 .copyWith(error: const Color.fromARGB(255, 215, 65, 55))),

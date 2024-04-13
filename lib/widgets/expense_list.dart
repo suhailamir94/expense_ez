@@ -41,10 +41,10 @@ class ExpenseList extends ConsumerWidget {
         children: [
           Text(
             'Transactions',
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(fontWeight: FontWeight.bold, fontSize: 30),
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                letterSpacing: 2),
           ),
           const SizedBox(
             height: 10,
@@ -55,7 +55,8 @@ class ExpenseList extends ConsumerWidget {
               Text(
                 listTitle,
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.grey,
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.5),
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
               ),
