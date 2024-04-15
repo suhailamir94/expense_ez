@@ -61,7 +61,9 @@ class ExpenseList extends ConsumerWidget {
                     fontSize: 20),
               ),
               IconButton(
-                  onPressed: () => handleOnSort(), icon: const Icon(Icons.sort))
+                onPressed: () => handleOnSort(),
+                icon: const Icon(Icons.sort),
+              )
             ],
           ),
           const SizedBox(

@@ -1,49 +1,141 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+
+class Indicator extends StatelessWidget {
+  const Indicator({
+    super.key,
+    required this.color,
+    required this.text,
+    required this.isSquare,
+    this.size = 16,
+    this.textColor,
+  });
+
+  final Color color;
+  final String text;
+  final bool isSquare;
+  final double size;
+  final Color? textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            color: color,
+          ),
+        ),
+        const SizedBox(
+          width: 4,
+        ),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        )
+      ],
+    );
+  }
+}
 
 class CustomPieChart extends StatefulWidget {
   const CustomPieChart({super.key});
 
   @override
-  State<StatefulWidget> createState() => _CustomPieChart();
+  State<CustomPieChart> createState() => _CustomPieChart();
 }
 
 class _CustomPieChart extends State<CustomPieChart> {
-  int touchedIndex = 0;
+  int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.3,
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: PieChart(
-          swapAnimationCurve: Curves.bounceIn,
-          swapAnimationDuration: Durations.medium1,
-          PieChartData(
-            pieTouchData: PieTouchData(
-              touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                setState(() {
-                  if (!event.isInterestedForInteractions ||
-                      pieTouchResponse == null ||
-                      pieTouchResponse.touchedSection == null) {
-                    touchedIndex = -1;
-                    return;
-                  }
-                  touchedIndex =
-                      pieTouchResponse.touchedSection!.touchedSectionIndex;
-                });
-              },
-            ),
-            borderData: FlBorderData(
-              show: false,
-            ),
-            sectionsSpace: 0,
-            centerSpaceRadius: 0,
-            sections: showingSections(),
+      child: Row(
+        children: <Widget>[
+          const SizedBox(
+            height: 18,
           ),
-        ),
+          Expanded(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: PieChart(
+                PieChartData(
+                  pieTouchData: PieTouchData(
+                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                      setState(() {
+                        if (!event.isInterestedForInteractions ||
+                            pieTouchResponse == null ||
+                            pieTouchResponse.touchedSection == null) {
+                          touchedIndex = -1;
+                          return;
+                        }
+                        touchedIndex = pieTouchResponse
+                            .touchedSection!.touchedSectionIndex;
+                      });
+                    },
+                  ),
+                  borderData: FlBorderData(
+                    show: false,
+                  ),
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 100,
+                  sections: showingSections(),
+                  startDegreeOffset: 250,
+                ),
+              ),
+            ),
+          ),
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Indicator(
+                color: Color(0xE5219FF3),
+                text: 'First',
+                isSquare: true,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Indicator(
+                color: Color(0xFFFFC300),
+                text: 'Second',
+                isSquare: true,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Indicator(
+                color: Color(0xFF6E1BFF),
+                text: 'Third',
+                isSquare: true,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Indicator(
+                color: Color(0xFF52A487),
+                text: 'Fourth',
+                isSquare: true,
+              ),
+              SizedBox(
+                height: 18,
+              ),
+            ],
+          ),
+          const SizedBox(
+            width: 28,
+          ),
+        ],
       ),
     );
   }
@@ -51,11 +143,9 @@ class _CustomPieChart extends State<CustomPieChart> {
   List<PieChartSectionData> showingSections() {
     return List.generate(4, (i) {
       final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 20.0 : 16.0;
-      final radius = isTouched ? 110.0 : 100.0;
-      final widgetSize = isTouched ? 80.0 : 60.0;
+      final fontSize = isTouched ? 25.0 : 16.0;
+      final radius = isTouched ? 60.0 : 50.0;
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
-
       switch (i) {
         case 0:
           return PieChartSectionData(
@@ -66,116 +156,52 @@ class _CustomPieChart extends State<CustomPieChart> {
             titleStyle: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
+              color: Colors.white,
               shadows: shadows,
             ),
-            badgeWidget: _Badge(
-              'assets/icons/ophthalmology-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
           );
         case 1:
           return PieChartSectionData(
-            color: const Color(0xFFFFC300),
             value: 30,
+            color: const Color(0xFFE3B824),
             title: '30%',
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
+              color: Colors.white,
               shadows: shadows,
             ),
-            badgeWidget: _Badge(
-              'assets/icons/librarian-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
           );
         case 2:
           return PieChartSectionData(
             color: const Color(0xFF6E1BFF),
-            value: 16,
-            title: '16%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              'assets/icons/fitness-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 3:
-          return PieChartSectionData(
-            color: const Color(0xFF3BFF49),
             value: 15,
             title: '15%',
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
+              color: Colors.white,
               shadows: shadows,
             ),
-            badgeWidget: _Badge(
-              'assets/icons/worker-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: Colors.black,
+          );
+        case 3:
+          return PieChartSectionData(
+            color: const Color(0xFF52A487),
+            value: 15,
+            title: '15%',
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: shadows,
             ),
-            badgePositionPercentageOffset: .98,
           );
         default:
-          throw Exception('Oh no');
+          throw Error();
       }
     });
-  }
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge(
-    this.svgAsset, {
-    required this.size,
-    required this.borderColor,
-  });
-  final String svgAsset;
-  final double size;
-  final Color borderColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: PieChart.defaultDuration,
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        // color: Colors.white,
-        shape: BoxShape.circle,
-        // boxShadow: <BoxShadow>[
-        //   BoxShadow(
-        //     // color: Colors.black.withOpacity(.5),
-        //     offset: Offset(3, 3),
-        //     blurRadius: 3,
-        //   ),
-        // ],
-      ),
-      padding: EdgeInsets.all(size * .15),
-      child: Center(
-        child: Lottie.asset(
-            'assets/lottie/food.json', // Replace with your Lottie animation file
-            width: 60, // Adjust the size as needed
-            height: 100,
-            fit: BoxFit.cover // Adjust the size as needed
-            ),
-      ),
-    );
   }
 }

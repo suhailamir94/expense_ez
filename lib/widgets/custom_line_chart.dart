@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -32,7 +33,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
           'EXPENSES THIS MONTH',
@@ -53,20 +54,23 @@ class _CustomLineChartState extends State<CustomLineChart> {
         ),
         Stack(
           children: <Widget>[
-            Card(
-              elevation: 2,
-              color: Colors.black87,
-              child: AspectRatio(
-                aspectRatio: 1.70,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 18,
-                    left: 12,
-                    top: 24,
-                    bottom: 12,
-                  ),
-                  child: LineChart(
-                    mainData(),
+            SizedBox(
+              height: 600,
+              child: Card(
+                elevation: 2,
+                color: Colors.black87,
+                child: AspectRatio(
+                  aspectRatio: 1.70,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 18,
+                      left: 12,
+                      top: 24,
+                      bottom: 12,
+                    ),
+                    child: LineChart(
+                      mainData(),
+                    ),
                   ),
                 ),
               ),

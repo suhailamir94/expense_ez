@@ -5,6 +5,7 @@ import 'package:expense_ez/provider/category_provider.dart.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -325,6 +326,7 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
                     'Select category',
@@ -333,40 +335,44 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 15.0),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    children: categories.map(
-                      (category) {
-                        return ElevatedButton(
-                          onPressed: _category.isNotEmpty
-                              ? () {
-                                  FocusScope.of(context).unfocus();
-                                  setState(() {
-                                    _category = category.id;
-                                  });
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _category == category.id
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
+                  SizedBox(
+                    width: double.maxFinite,
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      runSpacing: 12.0,
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      children: categories.map(
+                        (category) {
+                          return ElevatedButton(
+                            onPressed: _category.isNotEmpty
+                                ? () {
+                                    FocusScope.of(context).unfocus();
+                                    setState(() {
+                                      _category = category.id;
+                                    });
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _category == category.id
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            category.name,
-                            style: TextStyle(
-                                color: _category == category.id
-                                    ? Colors.white
-                                    : Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16),
-                          ),
-                        );
-                      },
-                    ).toList(),
+                            child: Text(
+                              category.name,
+                              style: TextStyle(
+                                  color: _category == category.id
+                                      ? Colors.white
+                                      : Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16),
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ),
                   ),
                   const SizedBox(height: 30),
                   Row(

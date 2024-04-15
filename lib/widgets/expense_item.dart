@@ -3,6 +3,7 @@ import 'package:expense_ez/provider/expense_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:expense_ez/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -37,6 +38,20 @@ class ExpenseItem extends ConsumerWidget {
                     ref
                         .read(expenseProvider.notifier)
                         .deleteExpense(expense.id);
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text('Transaction Deleted!'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 15),
+                    ));
                     Navigator.of(ctx).pop();
                   },
                   child: const Text('Yes')),
@@ -83,66 +98,74 @@ class ExpenseItem extends ConsumerWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 15),
-        padding: const EdgeInsets.symmetric(
-          vertical: 12,
-        ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                blurRadius: 5,
-                spreadRadius: 0,
-                offset: const Offset(0, 3),
-              ),
-            ]),
-        child: ListTile(
-          leading: ClipOval(
-            clipBehavior: Clip.antiAlias,
-            child: Lottie.asset(
-                'assets/lottie/${expense.category.name.toLowerCase()}.json', // Replace with your Lottie animation file
-                width: 60, // Adjust the size as needed
-                height: 100,
-                fit: BoxFit.cover // Adjust the size as needed
+      child: Animate(
+        effects: [
+          FadeEffect(duration: 1.seconds),
+          MoveEffect(
+              duration: 300.ms, begin: const Offset(0, 1000), end: Offset.zero)
+        ],
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 15),
+          padding: const EdgeInsets.symmetric(
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  blurRadius: 5,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 3),
                 ),
+              ]),
+          child: ListTile(
+            leading: ClipOval(
+              clipBehavior: Clip.antiAlias,
+              child: Lottie.asset(
+                  'assets/lottie/${expense.category.name.toLowerCase()}.json', // Replace with your Lottie animation file
+                  width: 60, // Adjust the size as needed
+                  height: 100,
+                  fit: BoxFit.cover // Adjust the size as needed
+                  ),
+            ),
+            title: Text(
+              capitalizeFirst(expense.title),
+            ),
+            titleTextStyle: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(fontWeight: FontWeight.bold),
+            subtitle: expense.description.isNotEmpty
+                ? Text(expense.description)
+                : null,
+            subtitleTextStyle: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(color: Colors.grey),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '₹ ${expense.amount.toString()}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  customFormatter.format(expense.timestamp),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(fontWeight: FontWeight.w500),
+                )
+              ],
+            ),
+            onTap: () {},
           ),
-          title: Text(
-            capitalizeFirst(expense.title),
-          ),
-          titleTextStyle: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(fontWeight: FontWeight.bold),
-          subtitle:
-              expense.description.isNotEmpty ? Text(expense.description) : null,
-          subtitleTextStyle: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(color: Colors.grey),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '₹ ${expense.amount.toString()}',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                customFormatter.format(expense.timestamp),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w500),
-              )
-            ],
-          ),
-          onTap: () {},
         ),
       ),
     );

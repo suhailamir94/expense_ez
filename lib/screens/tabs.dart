@@ -3,6 +3,7 @@ import 'package:expense_ez/screens/insights.dart';
 import 'package:expense_ez/widgets/filters.dart';
 import 'package:expense_ez/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
@@ -46,7 +47,12 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
     showModalBottomSheet(
         useSafeArea: true,
         context: context,
-        builder: (ctx) => const NewExpense(),
+        builder: (ctx) => const NewExpense().animate(effects: [
+              MoveEffect(
+                  begin: const Offset(-1000, 0),
+                  end: Offset.zero,
+                  duration: .3.seconds)
+            ]),
         isScrollControlled: true);
   }
 
