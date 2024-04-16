@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -19,8 +18,6 @@ class _CustomLineChartState extends State<CustomLineChart> {
   List<Color> gradientColors = [
     const Color.fromARGB(255, 163, 244, 199),
     const Color.fromARGB(255, 33, 243, 93)
-    // const Color(0xFF50E4FF),
-    // const Color(0xFF2196F3)
   ];
 
   int getTotalExpense(Map<double, double> expenses) {
@@ -123,8 +120,6 @@ class _CustomLineChartState extends State<CustomLineChart> {
       gridData: FlGridData(
         show: false,
         drawVerticalLine: false,
-        // horizontalInterval: 3,
-        // verticalInterval: maxTransactionValue / 10,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.white10,
@@ -173,12 +168,9 @@ class _CustomLineChartState extends State<CustomLineChart> {
       ),
       borderData: FlBorderData(
         show: false,
-        // border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
       maxX: 30,
-      // minY: 0,
-      // maxY: 10,
       lineBarsData: [
         LineChartBarData(
           spots: chartPoints,
