@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -29,52 +31,56 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          'EXPENSES THIS MONTH',
-          style: TextStyle(color: Colors.black38),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          '₹${formatter.format(getTotalExpense(widget.lineChartData))}',
-          style: Theme.of(context).textTheme.displaySmall!.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-              letterSpacing: 2),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Stack(
-          children: <Widget>[
-            SizedBox(
-              height: 600,
-              child: Card(
-                elevation: 2,
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'EXPENSES THIS MONTH',
+            style: TextStyle(color: Colors.black38),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            '₹${formatter.format(getTotalExpense(widget.lineChartData))}',
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                fontWeight: FontWeight.w600,
                 color: Colors.black87,
-                child: AspectRatio(
-                  aspectRatio: 1.70,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      right: 18,
-                      left: 12,
-                      top: 24,
-                      bottom: 12,
-                    ),
-                    child: LineChart(
-                      mainData(),
+                letterSpacing: 2),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Stack(
+              children: <Widget>[
+                SizedBox(
+                  height: double.infinity,
+                  child: Card(
+                    elevation: 2,
+                    color: Colors.black87,
+                    child: AspectRatio(
+                      aspectRatio: 1.70,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: 18,
+                          left: 12,
+                          top: 24,
+                          bottom: 12,
+                        ),
+                        child: LineChart(
+                          mainData(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 

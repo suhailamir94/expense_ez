@@ -91,15 +91,17 @@ class _InsightsState extends ConsumerState<Insights> {
               ],
             );
           }
-          return Column(
-            children: [
-              CustomLineChart(lineChartData: lineChartData)
-                  .animate(effects: [FadeEffect(duration: 1.seconds)]),
-              const SizedBox(
-                height: 20,
-              ),
-              // const CustomPieChart()
-            ],
+          return Expanded(
+            child: Column(
+              children: [
+                CustomLineChart(lineChartData: lineChartData),
+                // .animate(effects: [FadeEffect(duration: 1.seconds)]),
+                const SizedBox(
+                  height: 20,
+                ),
+                // const CustomPieChart()
+              ],
+            ),
           );
         }));
   }
