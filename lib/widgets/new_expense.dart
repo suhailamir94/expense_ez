@@ -128,11 +128,12 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
       } else {
         await ref.read(expenseProvider.notifier).addExpense(expense);
         ref.read(filterProvider.notifier).setFilter(
-            selectedFilterIndex: -1,
-            showAllExpenses: false,
-            selectedDate: DateTime.now(),
-            fromDate: DateTime(DateTime.now().year),
-            toDate: DateTime.now());
+              selectedFilterIndex: -1,
+              // showAllExpenses: false,
+              // selectedDate: DateTime.now(),
+              // fromDate: DateTime(DateTime.now().year),
+              // toDate: DateTime.now()
+            );
         ref
             .read(expenseProvider.notifier)
             .loadTransactionsByDate(DateTime.now());

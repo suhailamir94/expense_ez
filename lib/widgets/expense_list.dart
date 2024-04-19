@@ -19,17 +19,16 @@ class ExpenseList extends ConsumerWidget {
     if (filters['selectedFilterIndex'] > -1) {
       switch (filters['selectedFilterIndex']) {
         case 0:
-          listTitle = 'All Expenses';
+          listTitle = 'Today';
           break;
         case 1:
-          listTitle = 'This Month';
+          listTitle = 'This Week';
           break;
         case 2:
-          listTitle = 'On ${customFormatter.format(filters['selectedDate'])}';
+          listTitle = 'This Month';
           break;
         case 3:
-          listTitle =
-              '${customFormatter.format(filters['fromDate'])} - ${customFormatter.format(filters['toDate'])}';
+          listTitle = 'This Year';
           break;
         default:
           listTitle = 'Today';

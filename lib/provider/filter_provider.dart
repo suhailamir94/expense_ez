@@ -11,18 +11,19 @@ class FilterNotifier extends StateNotifier<Map<String, dynamic>> {
           'toDate': DateTime.now()
         });
 
-  void setFilter(
-      {required int selectedFilterIndex,
-      required bool showAllExpenses,
-      required DateTime selectedDate,
-      required DateTime fromDate,
-      required DateTime toDate}) {
+  void setFilter({
+    int selectedFilterIndex = 0,
+    // required bool showAllExpenses,
+    // required DateTime selectedDate,
+    // required DateTime fromDate,
+    // required DateTime toDate
+  }) {
     state = {
       'selectedFilterIndex': selectedFilterIndex,
-      'showAllExpenses': showAllExpenses,
-      'selectedDate': selectedDate,
-      'fromDate': fromDate,
-      'toDate': toDate
+      // 'showAllExpenses': showAllExpenses,
+      // 'selectedDate': selectedDate,
+      // 'fromDate': fromDate,
+      // 'toDate': toDate
     };
   }
 }

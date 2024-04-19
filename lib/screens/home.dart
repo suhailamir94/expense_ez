@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:expense_ez/provider/category_provider.dart.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
+import 'package:expense_ez/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -37,23 +38,25 @@ class _HomeState extends ConsumerState<Home> {
 
     switch (filters['selectedFilterIndex']) {
       case 0:
-        _expensesFuture =
-            ref.read(expenseProvider.notifier).loadAllTransactions();
-        break;
-      case 1:
-        _expensesFuture =
-            ref.read(expenseProvider.notifier).loadCurrentMonthTransactions();
-        break;
-      case 2:
         _expensesFuture = ref
             .read(expenseProvider.notifier)
-            .loadTransactionsByDate(filters['selectedDate']);
+            .loadTransactionsByDate(DateTime.now());
+        break;
+      case 1:
+        _expensesFuture = ref
+            .read(expenseProvider.notifier)
+            .loadTransactionBetweenDates(
+                getFirstDayOfWeek(DateTime.now()), DateTime.now());
+        break;
+      case 2:
+        _expensesFuture =
+            ref.read(expenseProvider.notifier).loadCurrentMonthTransactions();
         break;
       case 3:
         _expensesFuture = ref
             .read(expenseProvider.notifier)
             .loadTransactionBetweenDates(
-                filters['fromDate'], filters['toDate']);
+                DateTime.utc(DateTime.now().year, 1, 1), DateTime.now());
         break;
       default:
         _expensesFuture = ref

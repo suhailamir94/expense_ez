@@ -28,8 +28,9 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         title: 'ExpenseEz',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            fontFamily: GoogleFonts.roboto().fontFamily,
+            fontFamily: GoogleFonts.poppins().fontFamily,
             colorScheme: ColorScheme.fromSeed(
                     seedColor: const Color.fromARGB(255, 72, 223, 157))
                 .copyWith(error: const Color.fromARGB(255, 215, 65, 55))),

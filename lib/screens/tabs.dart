@@ -2,6 +2,7 @@ import 'package:expense_ez/screens/home.dart';
 import 'package:expense_ez/screens/insights.dart';
 import 'package:expense_ez/widgets/filters.dart';
 import 'package:expense_ez/widgets/new_expense.dart';
+import 'package:expense_ez/widgets/new_filters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,16 +33,16 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   }
 
   bool isChecked = false;
-  void _showModalBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Filters(
-          updateHomePage: _onModalStateChange,
-        );
-      },
-    );
-  }
+  // void _showModalBottomSheet(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Filters(
+  //         updateHomePage: _onModalStateChange,
+  //       );
+  //     },
+  //   );
+  // }
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
@@ -59,8 +60,9 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     Widget activeScreen = Home(
-      updateWidget:
-          _updateChildWidget, // this is a hack to reload child widget so it could call didUpdateWidget, bad approach, should have done using props/dependencies only
+      updateWidget: _updateChildWidget,
+      // this is a hack to reload child widget
+      //so it could call didUpdateWidget, bad approach, should have done using props/dependencies only
     );
 
     if (_selectedPageIndex == 1) {
@@ -75,11 +77,14 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    IconButton(
-                        onPressed: () {
-                          _showModalBottomSheet(context);
-                        },
-                        icon: Image.asset('assets/icons/filter_icon.png')),
+                    // IconButton(
+                    //     onPressed: () {
+                    //       _showModalBottomSheet(context);
+                    //     },
+                    //     icon: Image.asset('assets/icons/filter_icon.png')),
+                    NewFilters(
+                      updateHomePage: _onModalStateChange,
+                    ),
                     activeScreen
                   ]))),
       resizeToAvoidBottomInset: false,
