@@ -41,7 +41,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
             height: 10,
           ),
           Text(
-            '₹${formatter.format(getTotalExpense(widget.lineChartData))}',
+            '₹ ${formatter.format(getTotalExpense(widget.lineChartData))}',
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
