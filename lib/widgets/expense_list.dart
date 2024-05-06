@@ -45,14 +45,11 @@ class ExpenseList extends ConsumerWidget {
                 color: Colors.black87,
                 letterSpacing: 2),
           ),
-          const SizedBox(
-            height: 10,
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                listTitle,
+                'Total: ${200}',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color:
                         Theme.of(context).colorScheme.primary.withOpacity(0.5),
@@ -62,7 +59,7 @@ class ExpenseList extends ConsumerWidget {
               IconButton(
                 onPressed: () => handleOnSort(),
                 icon: const Icon(Icons.sort),
-              )
+              ),
             ],
           ),
           const SizedBox(

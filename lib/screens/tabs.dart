@@ -82,9 +82,11 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
                     //       _showModalBottomSheet(context);
                     //     },
                     //     icon: Image.asset('assets/icons/filter_icon.png')),
-                    NewFilters(
-                      updateHomePage: _onModalStateChange,
-                    ),
+                    _selectedPageIndex == 0
+                        ? NewFilters(
+                            updateHomePage: _onModalStateChange,
+                          )
+                        : Container(),
                     activeScreen
                   ]))),
       resizeToAvoidBottomInset: false,

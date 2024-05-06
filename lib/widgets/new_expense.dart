@@ -5,7 +5,6 @@ import 'package:expense_ez/provider/category_provider.dart.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -339,9 +338,9 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                   SizedBox(
                     width: double.maxFinite,
                     child: Wrap(
-                      alignment: WrapAlignment.spaceBetween,
+                      alignment: WrapAlignment.spaceEvenly,
                       runSpacing: 12.0,
-                      crossAxisAlignment: WrapCrossAlignment.end,
+                      // crossAxisAlignment: WrapCrossAlignment.end,
                       children: categories.map(
                         (category) {
                           return ElevatedButton(

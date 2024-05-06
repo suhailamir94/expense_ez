@@ -3,9 +3,7 @@ import 'dart:developer';
 import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/provider/expense_provider.dart';
 import 'package:expense_ez/widgets/custom_line_chart.dart';
-import 'package:expense_ez/widgets/custom_pie_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
@@ -64,12 +62,6 @@ class _InsightsState extends ConsumerState<Insights> {
 
     final lineChartData = convertExpensesToLineChartData(expenses);
 
-    if (expenses.isEmpty) {
-      return const Center(
-        child: Text('No Data!'),
-      );
-    }
-
     return FutureBuilder(
         future: _expensesFuture,
         builder: ((context, snapshot) {
@@ -96,10 +88,6 @@ class _InsightsState extends ConsumerState<Insights> {
               children: [
                 CustomLineChart(lineChartData: lineChartData),
                 // .animate(effects: [FadeEffect(duration: 1.seconds)]),
-                const SizedBox(
-                  height: 20,
-                ),
-                // const CustomPieChart()
               ],
             ),
           );
