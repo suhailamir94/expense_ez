@@ -1,6 +1,5 @@
 import 'package:expense_ez/screens/home.dart';
 import 'package:expense_ez/screens/insights.dart';
-import 'package:expense_ez/widgets/filters.dart';
 import 'package:expense_ez/widgets/new_expense.dart';
 import 'package:expense_ez/widgets/new_filters.dart';
 import 'package:flutter/material.dart';
@@ -71,24 +70,27 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
 
     return Scaffold(
       body: SafeArea(
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // IconButton(
-                    //     onPressed: () {
-                    //       _showModalBottomSheet(context);
-                    //     },
-                    //     icon: Image.asset('assets/icons/filter_icon.png')),
-                    _selectedPageIndex == 0
-                        ? NewFilters(
-                            updateHomePage: _onModalStateChange,
-                          )
-                        : Container(),
-                    activeScreen
-                  ]))),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // IconButton(
+              //     onPressed: () {
+              //       _showModalBottomSheet(context);
+              //     },
+              //     icon: Image.asset('assets/icons/filter_icon.png')),
+              _selectedPageIndex == 0
+                  ? NewFilters(
+                      updateHomePage: _onModalStateChange,
+                    )
+                  : Container(),
+              activeScreen
+            ],
+          ),
+        ),
+      ),
       resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromARGB(255, 235, 242, 238),
       bottomNavigationBar: BottomNavigationBar(

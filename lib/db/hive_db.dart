@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/models/category.dart';
+import 'package:expense_ez/utils/util.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -21,6 +22,13 @@ class HiveDB {
     final Box<dynamic> box = await Hive.openBox<dynamic>('settings');
     final bool categoriesLoaded =
         box.get('categoriesLoaded', defaultValue: false);
+    final int apiHitCount = box.get('apiHitCount', defaultValue: 20);
+    final DateTime lastHitTimestamp =
+        box.get('lastHitTimestamp', defaultValue: DateTime.now());
+    final currentTimestamp = DateTime.now();
+    if (checkIfNextDayStarted(lastHitTimestamp, currentTimestamp)) {
+      await box.put('lastHitTimestamp', currentTimestamp);
+    }
 
     if (!categoriesLoaded) {
       // Load categories into the box

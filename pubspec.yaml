@@ -45,6 +45,9 @@ dependencies:
   intl: ^0.19.0
   fl_chart: ^0.67.0
   flutter_animate: ^4.5.0
+  record: ^5.1.2
+  just_audio: ^0.9.40
+  google_generative_ai: ^0.4.5
 
 dev_dependencies:
   flutter_test:
@@ -81,7 +84,11 @@ flutter:
     - assets/lottie/shopping.json
     - assets/lottie/vacation.json
     - assets/lottie/miscellaneous.json
+    - assets/lottie/sound_wave.json
+    - assets/lottie/analysis.json
     - assets/icons/filter_icon.png
+    - assets/icons/mic_off_icon.png
+    - assets/icons/mic_on_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

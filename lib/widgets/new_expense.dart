@@ -1,14 +1,26 @@
+import 'package:expense_ez/utils/constants.dart';
+import 'package:flutter/material.dart';
+import 'dart:io' as io;
+import 'dart:convert';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/models/category.dart';
 import 'package:expense_ez/provider/expense_provider.dart';
 import 'package:expense_ez/provider/category_provider.dart.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/utils/util.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 DateFormat customFormatter = DateFormat('M/d/yyyy');
+
+class Config {
+  static const String apiKey = String.fromEnvironment('API_KEY');
+}
 
 class NewExpense extends ConsumerStatefulWidget {
   const NewExpense({super.key, this.newExpense});
@@ -19,24 +31,51 @@ class NewExpense extends ConsumerStatefulWidget {
   ConsumerState<NewExpense> createState() => _NewExpenseState();
 }
 
-class _NewExpenseState extends ConsumerState<NewExpense> {
-  final TextEditingController _dateTime =
-      TextEditingController(text: customFormatter.format(DateTime.now()));
+class _NewExpenseState extends ConsumerState<NewExpense>
+    with SingleTickerProviderStateMixin {
   final _form = GlobalKey<FormState>();
   var _title = '';
   var _amount = '';
+  final TextEditingController _dateTime =
+      TextEditingController(text: customFormatter.format(DateTime.now()));
+  final TextEditingController _amountController =
+      TextEditingController(text: '');
+  final TextEditingController _titleController =
+      TextEditingController(text: '');
   var _description = '';
   int _selectedPaymentIndex = 0;
   String _category = '';
   List<Category> categories = [];
+  bool _isHeld = false;
+  late AudioRecorder audioRecord;
+  bool isRecording = false;
+  String audioPath = '';
+  var geminiError = false;
+  var _inProgress = false;
+  late AnimationController _transitionController;
+  late Animation<Offset> _offsetAnimation;
 
   @override
   void initState() {
     super.initState();
+    _transitionController = AnimationController(
+      duration: const Duration(seconds: 2), // Adjust the duration as needed
+      vsync: this,
+    );
+
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(-1.5, 0), // Start off-screen to the left
+      end: const Offset(1.5, 0), // Move off-screen to the right
+    ).animate(CurvedAnimation(
+      parent: _transitionController,
+      curve: Curves.linear,
+    ));
+
+    audioRecord = AudioRecorder();
     if (widget.newExpense != null) {
       setState(() {
-        _title = widget.newExpense!.title;
-        _amount = widget.newExpense!.amount.toString();
+        _titleController.text = widget.newExpense!.title;
+        _amountController.text = widget.newExpense!.amount.toString();
         _description = widget.newExpense!.description;
         _dateTime.text = formatter.format(widget.newExpense!.timestamp);
         _selectedPaymentIndex =
@@ -159,6 +198,122 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
     }
   }
 
+  Future<void> _sendVoiceNoteToGemini() async {
+    try {
+      _transitionController.repeat();
+      setState(() {
+        geminiError = false;
+        _inProgress = true;
+      });
+// Access your API key as an environment variable (see "Set up your API key" above)
+      const apiKey = Config.apiKey;
+      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      final content = [
+        Content.text(PROMPT),
+        Content.data('audio/aac', await loadFileAudio(audioPath))
+      ];
+      final GenerateContentResponse response =
+          await model.generateContent(content);
+      print(
+          'candidatesTokenCount: ${response.usageMetadata?.candidatesTokenCount}');
+      print('promptTokenCount: ${response.usageMetadata?.promptTokenCount}');
+      print('totalTokenCount: ${response.usageMetadata?.totalTokenCount}');
+      print(response.text);
+      _transitionController.stop();
+      if (response.text != null) {
+        if (response.text!.contains('Please share a clear audio')) {
+          setState(() {
+            geminiError = true;
+          });
+        }
+        Map<String, dynamic> geminiResponse = jsonDecode(response.text!);
+        _amountController.text = geminiResponse['amount'].toString();
+        _titleController.text = geminiResponse['title'].toString();
+        var categoryIndex =
+            categories.indexWhere((e) => e.name == geminiResponse['category']);
+        setState(() {
+          if (categoryIndex > -1) _category = categories[categoryIndex].id;
+          _inProgress = false;
+          geminiError = false;
+        });
+      }
+    } catch (e) {
+      print('Error while getting data from gemini: $e');
+      _transitionController.stop();
+      setState(() {
+        _inProgress = false;
+        geminiError = true;
+      });
+    }
+  }
+
+  Future<String> _getPath() async {
+    var dir = await getApplicationDocumentsDirectory();
+    if (io.Platform.isAndroid) {
+      dir = (await getExternalStorageDirectory())!;
+    }
+    return p.join(
+      dir.path,
+      'audio_recording.m4a',
+    );
+  }
+
+  Future<void> startRecording() async {
+    try {
+      if (await audioRecord.hasPermission()) {
+        await audioRecord.start(const RecordConfig(), path: await _getPath());
+        setState(() {
+          isRecording = true;
+        });
+      }
+    } catch (e) {
+      print('Error starting to reocrd: $e');
+    }
+  }
+
+  Future<void> stopRecording() async {
+    try {
+      if (await audioRecord.hasPermission()) {
+        String? path = await audioRecord.stop();
+        print('audio file path is: $path');
+        setState(() {
+          isRecording = false;
+          audioPath = path!;
+        });
+        _sendVoiceNoteToGemini();
+      }
+    } catch (e) {
+      print('Error stoping to reocrd: $e');
+    }
+  }
+
+  void _onHoldStart() {
+    startRecording();
+    setState(() {
+      _isHeld = true;
+    });
+  }
+
+  void _onHoldEnd() {
+    stopRecording();
+    setState(() {
+      _isHeld = false;
+    });
+  }
+
+  void _setAmount(newValue) {
+    _amount = newValue!;
+  }
+
+  @override
+  void dispose() {
+    audioRecord.dispose();
+    _dateTime.dispose();
+    _amountController.dispose();
+    _titleController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -171,8 +326,9 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                onSaved: (newValue) => _amount = newValue!,
-                initialValue: _amount,
+                controller: _amountController,
+                onSaved: _setAmount,
+                // initialValue: _amount,
                 clipBehavior: Clip.hardEdge,
                 autofocus: true,
                 maxLength: 10,
@@ -199,8 +355,9 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                 height: 20,
               ),
               TextFormField(
+                controller: _titleController,
                 onSaved: (newValue) => _title = newValue!,
-                initialValue: _title,
+                // initialValue: _title,
                 maxLength: 20,
                 validator: _validateTitle,
                 decoration: InputDecoration(
@@ -376,43 +533,104 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                   ),
                   const SizedBox(height: 30),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          'Cancel',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Cancel',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: _submitExpense,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
+                            child: Text(
+                              widget.newExpense == null ? 'Add' : 'Update',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
-                      ElevatedButton(
-                        onPressed: _submitExpense,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTapDown: (_) => _onHoldStart(),
+                            onTapUp: (_) => _onHoldEnd(),
+                            onTapCancel: _onHoldEnd,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 100),
+                              transform: Matrix4.identity()
+                                ..scale(_isHeld ? 1.2 : 1.0),
+                              child: Icon(
+                                Icons.mic,
+                                size: 40.0,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          )
+                          // HoldIconButton()
+                        ],
+                      )
+                    ],
+                  ),
+                  if (_isHeld)
+                    Center(
+                      child: Lottie.asset(
+                        'assets/lottie/sound_wave.json', // Replace with your Lottie animation file
+                        width: 200, // Adjust the size as needed
+                        height: 100,
+                        // fit: BoxFit.cover // Adjust the size as needed
+                      ),
+                    ),
+                  if (geminiError && !_isHeld)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                          child: Text(
+                        'Please share clear audio!',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
+                      )),
+                    ),
+                  if (_inProgress)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: SlideTransition(
+                          position: _offsetAnimation,
+                          child: Lottie.asset(
+                            'assets/lottie/analysis.json', // Replace with your Lottie animation file
+                            width: 200, // Adjust the size as needed
+                            height: 70,
+                            // fit: BoxFit.cover // Adjust the size as needed
                           ),
                         ),
-                        child: Text(
-                          widget.newExpense == null ? 'Add' : 'Update',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                        ),
                       ),
-                    ],
-                  )
+                    ),
                 ],
-              )
+              ),
             ],
           ),
         ),
