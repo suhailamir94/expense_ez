@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:expense_ez/provider/category_provider.dart.dart';
+import 'package:expense_ez/provider/category_provider.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:flutter/material.dart';

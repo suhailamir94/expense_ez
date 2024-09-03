@@ -9,7 +9,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:expense_ez/models/expense.dart';
 import 'package:expense_ez/models/category.dart';
 import 'package:expense_ez/provider/expense_provider.dart';
-import 'package:expense_ez/provider/category_provider.dart.dart';
+import 'package:expense_ez/provider/category_provider.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,24 +52,10 @@ class _NewExpenseState extends ConsumerState<NewExpense>
   String audioPath = '';
   var geminiError = false;
   var _inProgress = false;
-  late AnimationController _transitionController;
-  late Animation<Offset> _offsetAnimation;
 
   @override
   void initState() {
     super.initState();
-    _transitionController = AnimationController(
-      duration: const Duration(seconds: 2), // Adjust the duration as needed
-      vsync: this,
-    );
-
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(-1.5, 0), // Start off-screen to the left
-      end: const Offset(1.5, 0), // Move off-screen to the right
-    ).animate(CurvedAnimation(
-      parent: _transitionController,
-      curve: Curves.linear,
-    ));
 
     audioRecord = AudioRecorder();
     if (widget.newExpense != null) {
@@ -200,7 +186,6 @@ class _NewExpenseState extends ConsumerState<NewExpense>
 
   Future<void> _sendVoiceNoteToGemini() async {
     try {
-      _transitionController.repeat();
       setState(() {
         geminiError = false;
         _inProgress = true;
@@ -219,7 +204,6 @@ class _NewExpenseState extends ConsumerState<NewExpense>
       print('promptTokenCount: ${response.usageMetadata?.promptTokenCount}');
       print('totalTokenCount: ${response.usageMetadata?.totalTokenCount}');
       print(response.text);
-      _transitionController.stop();
       if (response.text != null) {
         if (response.text!.contains('Please share a clear audio')) {
           setState(() {
@@ -239,7 +223,6 @@ class _NewExpenseState extends ConsumerState<NewExpense>
       }
     } catch (e) {
       print('Error while getting data from gemini: $e');
-      _transitionController.stop();
       setState(() {
         _inProgress = false;
         geminiError = true;
@@ -330,7 +313,7 @@ class _NewExpenseState extends ConsumerState<NewExpense>
                 onSaved: _setAmount,
                 // initialValue: _amount,
                 clipBehavior: Clip.hardEdge,
-                autofocus: true,
+                // autofocus: true,
                 maxLength: 10,
                 validator: _validateAmount,
                 keyboardType: TextInputType.number,
@@ -618,14 +601,11 @@ class _NewExpenseState extends ConsumerState<NewExpense>
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Center(
-                        child: SlideTransition(
-                          position: _offsetAnimation,
-                          child: Lottie.asset(
-                            'assets/lottie/analysis.json', // Replace with your Lottie animation file
-                            width: 200, // Adjust the size as needed
-                            height: 70,
-                            // fit: BoxFit.cover // Adjust the size as needed
-                          ),
+                        child: Lottie.asset(
+                          'assets/lottie/analysis.json', // Replace with your Lottie animation file
+                          width: 200, // Adjust the size as needed
+                          height: 70,
+                          // fit: BoxFit.cover // Adjust the size as needed
                         ),
                       ),
                     ),
