@@ -22,18 +22,20 @@ class HiveDB {
     final Box<dynamic> box = await Hive.openBox<dynamic>('settings');
     final bool categoriesLoaded =
         box.get('categoriesLoaded', defaultValue: false);
-    final int apiHitCount = box.get('apiHitCount', defaultValue: 20);
     final DateTime lastHitTimestamp =
         box.get('lastHitTimestamp', defaultValue: DateTime.now());
     final currentTimestamp = DateTime.now();
     if (checkIfNextDayStarted(lastHitTimestamp, currentTimestamp)) {
       await box.put('lastHitTimestamp', currentTimestamp);
+      await box.put('apiHitCount', 20);
     }
 
     if (!categoriesLoaded) {
       // Load categories into the box
       await _loadCategories();
 
+      await box.put('lastHitTimestamp', currentTimestamp);
+      await box.put('apiHitCount', 20);
       // Set the flag to indicate that categories have been loaded
       await box.put('categoriesLoaded', true);
     }
@@ -47,6 +49,17 @@ class HiveDB {
   static Future<List<Category>> getAllCategories() async {
     final categoryBox = Hive.box<Category>('categories');
     return categoryBox.values.toList();
+  }
+
+  static Future<Map<dynamic, dynamic>> getAppSettings() async {
+    final settingsBox = Hive.box<dynamic>('settings');
+    return settingsBox.toMap();
+  }
+
+  static Future<void> updateApiHitCount(int newCount) async {
+    final settingsBox = Hive.box<dynamic>('settings');
+    await settingsBox.put('apiHitCount', newCount);
+    await settingsBox.put('lastHitTimestamp', DateTime.now());
   }
 
   static Future<void> _loadCategories() async {
@@ -93,7 +106,7 @@ class HiveDB {
             expense.timestamp.isBefore(endDate.add(const Duration(days: 1))))
         .toList();
 
-    expenses.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    expenses.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return expenses;
   }
 

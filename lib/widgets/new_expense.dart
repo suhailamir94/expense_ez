@@ -1,3 +1,4 @@
+import 'package:expense_ez/provider/settings_provider.dart';
 import 'package:expense_ez/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
@@ -52,6 +53,7 @@ class _NewExpenseState extends ConsumerState<NewExpense>
   String audioPath = '';
   var geminiError = false;
   var _inProgress = false;
+  int apiHitCount = 0;
 
   @override
   void initState() {
@@ -76,7 +78,9 @@ class _NewExpenseState extends ConsumerState<NewExpense>
     super.didChangeDependencies();
 
     final List<Category> loadedCategories = ref.watch(categoryProvider);
+    final settings = ref.watch(settingsProvider);
     setState(() {
+      apiHitCount = settings['apiHitCount'];
       categories = loadedCategories;
       if (_category.isEmpty) {
         _category =
@@ -226,6 +230,13 @@ class _NewExpenseState extends ConsumerState<NewExpense>
       setState(() {
         _inProgress = false;
         geminiError = true;
+      });
+    } finally {
+      await ref
+          .read(settingsProvider.notifier)
+          .updateApiHitCount(apiHitCount - 1);
+      setState(() {
+        apiHitCount = apiHitCount - 1;
       });
     }
   }
@@ -555,23 +566,33 @@ class _NewExpenseState extends ConsumerState<NewExpense>
                           ),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          GestureDetector(
-                            onTapDown: (_) => _onHoldStart(),
-                            onTapUp: (_) => _onHoldEnd(),
-                            onTapCancel: _onHoldEnd,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 100),
-                              transform: Matrix4.identity()
-                                ..scale(_isHeld ? 1.2 : 1.0),
-                              child: Icon(
-                                Icons.mic,
-                                size: 40.0,
-                                color: Theme.of(context).colorScheme.primary,
+                          AbsorbPointer(
+                            absorbing: apiHitCount == 0,
+                            child: GestureDetector(
+                              onTapDown: (_) => _onHoldStart(),
+                              onTapUp: (_) => _onHoldEnd(),
+                              onTapCancel: _onHoldEnd,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 100),
+                                transform: Matrix4.identity()
+                                  ..scale(_isHeld ? 1.2 : 1.0),
+                                child: Icon(
+                                  Icons.mic,
+                                  size: 40.0,
+                                  color: (apiHitCount == 0
+                                      ? Colors.grey
+                                      : Theme.of(context).colorScheme.primary),
+                                ),
                               ),
                             ),
+                          ),
+                          Text(
+                            '$apiHitCount / 20',
+                            style: const TextStyle(
+                                color: Colors.black38, fontSize: 10),
                           )
                           // HoldIconButton()
                         ],

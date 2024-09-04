@@ -175,6 +175,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       ),
       minX: 0,
       maxX: 30,
+      minY: 0,
       lineBarsData: [
         LineChartBarData(
           spots: chartPoints,

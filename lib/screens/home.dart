@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:expense_ez/provider/category_provider.dart';
 import 'package:expense_ez/provider/filter_provider.dart';
+import 'package:expense_ez/provider/settings_provider.dart';
 import 'package:expense_ez/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +24,7 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   late Future<void> _expensesFuture;
   late Future<void> _categoryFuture;
+  late Future<void> _settingsFuture;
   bool isAscendingSort = false;
 
   void onSortChange() {
@@ -64,6 +66,7 @@ class _HomeState extends ConsumerState<Home> {
             .loadTransactionsByDate(DateTime.now());
     }
     _categoryFuture = ref.read(categoryProvider.notifier).loadData();
+    _settingsFuture = ref.read(settingsProvider.notifier).loadData();
   }
 
   @override
@@ -83,10 +86,8 @@ class _HomeState extends ConsumerState<Home> {
     final List<Expense> expenses = ref.watch(expenseProvider);
 
     return FutureBuilder(
-        future: Future.wait([
-          _expensesFuture,
-          _categoryFuture,
-        ]),
+        future:
+            Future.wait([_expensesFuture, _categoryFuture, _settingsFuture]),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
