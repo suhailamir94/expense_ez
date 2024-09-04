@@ -49,7 +49,7 @@ class _NewExpenseState extends ConsumerState<NewExpense>
   List<Category> categories = [];
   bool _isHeld = false;
   late AudioRecorder audioRecord;
-  bool isRecording = false;
+  bool _isRecording = false;
   String audioPath = '';
   var geminiError = false;
   var _inProgress = false;
@@ -60,6 +60,7 @@ class _NewExpenseState extends ConsumerState<NewExpense>
     super.initState();
 
     audioRecord = AudioRecorder();
+    getMicrophonePermission();
     if (widget.newExpense != null) {
       setState(() {
         _titleController.text = widget.newExpense!.title;
@@ -87,6 +88,10 @@ class _NewExpenseState extends ConsumerState<NewExpense>
             loadedCategories.firstWhere((e) => e.name == 'Miscellaneous').id;
       }
     });
+  }
+
+  getMicrophonePermission() async {
+    await audioRecord.hasPermission();
   }
 
   String? _validateTitle(String? value) {
@@ -255,10 +260,11 @@ class _NewExpenseState extends ConsumerState<NewExpense>
   Future<void> startRecording() async {
     try {
       if (await audioRecord.hasPermission()) {
-        await audioRecord.start(const RecordConfig(), path: await _getPath());
         setState(() {
-          isRecording = true;
+          _isRecording = true;
+          _isHeld = true;
         });
+        await audioRecord.start(const RecordConfig(), path: await _getPath());
       }
     } catch (e) {
       print('Error starting to reocrd: $e');
@@ -271,7 +277,7 @@ class _NewExpenseState extends ConsumerState<NewExpense>
         String? path = await audioRecord.stop();
         print('audio file path is: $path');
         setState(() {
-          isRecording = false;
+          _isRecording = false;
           audioPath = path!;
         });
         _sendVoiceNoteToGemini();
@@ -283,16 +289,13 @@ class _NewExpenseState extends ConsumerState<NewExpense>
 
   void _onHoldStart() {
     startRecording();
-    setState(() {
-      _isHeld = true;
-    });
   }
 
   void _onHoldEnd() {
-    stopRecording();
     setState(() {
       _isHeld = false;
     });
+    stopRecording();
   }
 
   void _setAmount(newValue) {
@@ -570,7 +573,7 @@ class _NewExpenseState extends ConsumerState<NewExpense>
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           AbsorbPointer(
-                            absorbing: apiHitCount == 0,
+                            absorbing: apiHitCount == 0 || _inProgress,
                             child: GestureDetector(
                               onTapDown: (_) => _onHoldStart(),
                               onTapUp: (_) => _onHoldEnd(),
