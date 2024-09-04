@@ -5,7 +5,7 @@ Expenditure Details: Determine what the money was spent on, whether it was a pro
 After extracting this information, you also need to categorize the expenditure based on the following predefined categories:
 
 Food: For any money spent on meals, snacks, dining out, etc.
-Grocery: For purchases related to daily household items or groceries.
+Groceries: For purchases related to daily household items or groceries.
 Transport: For expenses related to transportation, such as fuel, tickets, or vehicle maintenance.
 Health: For money spent on medical expenses, health products, or wellness services.
 Shopping: For general shopping expenses, including clothing, accessories, electronics, etc.

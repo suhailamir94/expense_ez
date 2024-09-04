@@ -3,6 +3,7 @@ import 'package:expense_ez/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
 import 'dart:convert';
+import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -34,6 +35,7 @@ class NewExpense extends ConsumerStatefulWidget {
 
 class _NewExpenseState extends ConsumerState<NewExpense>
     with SingleTickerProviderStateMixin {
+  Timer? _timer;
   final _form = GlobalKey<FormState>();
   var _title = '';
   var _amount = '';
@@ -49,7 +51,6 @@ class _NewExpenseState extends ConsumerState<NewExpense>
   List<Category> categories = [];
   bool _isHeld = false;
   late AudioRecorder audioRecord;
-  bool _isRecording = false;
   String audioPath = '';
   var geminiError = false;
   var _inProgress = false;
@@ -261,10 +262,14 @@ class _NewExpenseState extends ConsumerState<NewExpense>
     try {
       if (await audioRecord.hasPermission()) {
         setState(() {
-          _isRecording = true;
           _isHeld = true;
         });
         await audioRecord.start(const RecordConfig(), path: await _getPath());
+        _timer = Timer(const Duration(seconds: 10), () async {
+          if (await audioRecord.isRecording()) {
+            stopRecording();
+          }
+        });
       }
     } catch (e) {
       print('Error starting to reocrd: $e');
@@ -273,12 +278,13 @@ class _NewExpenseState extends ConsumerState<NewExpense>
 
   Future<void> stopRecording() async {
     try {
-      if (await audioRecord.hasPermission()) {
+      if (await audioRecord.hasPermission() &&
+          await audioRecord.isRecording()) {
         String? path = await audioRecord.stop();
         print('audio file path is: $path');
         setState(() {
-          _isRecording = false;
           audioPath = path!;
+          _isHeld = false;
         });
         _sendVoiceNoteToGemini();
       }
@@ -292,9 +298,6 @@ class _NewExpenseState extends ConsumerState<NewExpense>
   }
 
   void _onHoldEnd() {
-    setState(() {
-      _isHeld = false;
-    });
     stopRecording();
   }
 
